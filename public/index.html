@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Example</title>
+  </head>
+  <body>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getAuth,
+        connectAuthEmulator,
+        GoogleAuthProvider,
+        signInWithPopup,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+      // This config isn't relevant for this example
+      const app = initializeApp({
+        apiKey: "demo-project-api-key",
+        authDomain: "demo-project.firebaseapp.com",
+        projectId: "demo-project",
+      });
+
+      const auth = getAuth(app);
+      connectAuthEmulator(auth, "http://127.0.0.1:9099");
+
+      const buttonDefault = document.getElementById("sign-in-default-tenant");
+      const buttonSecond = document.getElementById("sign-in-second-tenant");
+      const buttonThird = document.getElementById("sign-in-some-id-tenant");
+
+      function initApp() {
+        buttonDefault.addEventListener("click", signInWithGoogleDefault);
+        buttonSecond.addEventListener("click", signInWithGoogleSecondTenant);
+        buttonThird.addEventListener("click", signInWithGoogleThirdTenant);
+
+        auth.onAuthStateChanged(function (user) {
+          if (user) {
+            // User is signed in.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var isAnonymous = user.isAnonymous;
+            var uid = user.uid;
+            var providerData = user.providerData;
+            document.getElementById("user-status").textContent = "Signed in";
+            document.getElementById("account-details").textContent =
+              JSON.stringify(user, null, "  ");
+            document.getElementById("sign-out-btn").disabled = false;
+            buttonDefault.disabled = true;
+            buttonSecond.disabled = true;
+            buttonThird.disabled = true;
+          } else {
+            // User is signed out.
+            document.getElementById("user-status").textContent = "Signed out";
+            document.getElementById("account-details").textContent = "null";
+            document.getElementById("sign-out-btn").disabled = true;
+            buttonDefault.disabled = false;
+            buttonSecond.disabled = false;
+            buttonThird.disabled = false;
+          }
+        });
+      }
+
+      function signInWithGoogleDefault() {
+        auth.tenantId = null;
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider);
+      }
+
+      function signInWithGoogleSecondTenant() {
+        auth.tenantId = "second-tenant-i8lry";
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider);
+      }
+
+      function signInWithGoogleThirdTenant() {
+        auth.tenantId = "some-id";
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider);
+      }
+
+      function signtOut() {
+        auth.signOut();
+      }
+
+      document
+        .getElementById("sign-out-btn")
+        .addEventListener("click", signtOut, false);
+
+      window.onload = function () {
+        initApp();
+      };
+    </script>
+
+    Try out any of the following in any order:
+    <ul>
+      <li>
+        Click "Sign in with Google default tenant" button
+        <ol>
+          <li>
+            If tenant has accounts, validate if it shows the accounts for that
+            specific tenant
+          </li>
+          <li>Click "Add new account" button in popup</li>
+          <li>Click "Auto-generate user information</li>
+          <li>
+            (Optional) add a number identifier to display name to better track
+            user(e.g. "Algae Grass" -> "Algae Grass 1")
+          </li>
+          <li>
+            Validate that the user is created under the
+            <code>default tenant</code> in the emulator UI
+            <a href="http://localhost:4000/auth/" target="_blank"
+              >http://localhost:4000/auth/</a
+            >
+          </li>
+          <li>Click "Sign out" button</li>
+        </ol>
+      </li>
+      <br />
+      <li>
+        Click "Sign in with Google second tenant" button
+        <ol>
+          <li>
+            If tenant has accounts, validate if it shows the accounts for that
+            specific tenant
+          </li>
+          <li>Click "Add new account" button in popup</li>
+          <li>Click "Auto-generate user information</li>
+          <li>
+            (Optional) add a number identifier to display name to better track
+            user(e.g. "Algae Grass" -> "Algae Grass 2")
+          </li>
+          <li>
+            Validate that the user is created under the
+            <code>seconds tenant</code> in the emulator UI
+            <a href="http://localhost:4000/auth/second" target="_blank"
+              >http://localhost:4000/auth/second</a
+            >
+          </li>
+          <li>Click "Sign out" button</li>
+        </ol>
+      </li>
+      <br />
+      <li>
+        Click "Sign in with Google some-id tenant" button
+        <ol>
+          <li>
+            If tenant has accounts, validate if it shows the accounts for that
+            specific tenant
+          </li>
+          <li>Click "Add new account" button in popup</li>
+          <li>Click "Auto-generate user information</li>
+          <li>
+            (Optional) add a number identifier to display name to better track
+            user(e.g. "Algae Grass" -> "Algae Grass 3")
+          </li>
+          <li>
+            Validate that the user is created under the
+            <code>some-id tenant</code> in the emulator UI
+            <a href="http://localhost:4000/auth/some-id" target="_blank"
+              >http://localhost:4000/auth/some-id</a
+            >
+          </li>
+          <li>Click "Sign out" button</li>
+        </ol>
+      </li>
+    </ul>
+
+    <br />
+    Default tenant:
+    <!-- sign in default tenant button -->
+    <br />
+    <button id="sign-in-default-tenant">
+      Sign in with Google default tenant
+    </button>
+    <br />
+    <br />
+
+    Second tenant:
+    <!-- sign in second tenant button -->
+    <br />
+    <button id="sign-in-second-tenant">
+      Sign in with Google second tenant
+    </button>
+    <br />
+    <br />
+
+    <!-- sign in some-id tenant button -->
+    some-id tenant:
+    <br />
+    <button id="sign-in-some-id-tenant">
+      Sign in with Google some-id tenant
+    </button>
+    <br />
+
+    <!-- sign out button -->
+    <br />
+    <button disabled id="sign-out-btn">Sign out</button>
+    <br />
+
+    <!-- user info -->
+    <br />
+    <div>
+      User status:
+      <span id="user-status">Unknown</span>
+      <div>Current user object value:</div>
+      <hr />
+      <pre><code id="account-details">null</code></pre>
+      <hr />
+    </div>
+  </body>
+</html>
