@@ -1,7 +1,6 @@
 # Testing issue 8541
 
-A simple repro to test out multi tenancy on the auth emulator
-
+A simple repro to test out multi tenancy combined with sso users on the auth emulator
 ## Steps to run
 
 1. Run `firebase emulators:start --project demo-project`
