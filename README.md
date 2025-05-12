@@ -1,4 +1,4 @@
-# Testing issue 5623
+# Testing issue 8541
 
 A simple repro to test out multi tenancy on the auth emulator
 
@@ -9,8 +9,9 @@ A simple repro to test out multi tenancy on the auth emulator
 
 ## Expected behavior
 
-When using sign in with pop-up an a Google Auth provider. show the correct tenant
+SSO users should be created in the tenant that is specified.
 
 ## Actual behavior
 
-Only users on the "default" tenant is being shown
+SSO users are always created in the default tenant.
+
