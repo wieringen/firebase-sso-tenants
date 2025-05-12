@@ -5,18 +5,18 @@
   </head>
   <body>
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
       import {
         getAuth,
         connectAuthEmulator,
-        GoogleAuthProvider,
-        signInWithPopup,
-      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        signInWithRedirect,
+        SAMLAuthProvider
+      } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
 
       // This config isn't relevant for this example
       const app = initializeApp({
         apiKey: "demo-project-api-key",
-        authDomain: "demo-project.firebaseapp.com",
+        authDomain: window.location,
         projectId: "demo-project",
       });
 
@@ -28,12 +28,13 @@
       const buttonThird = document.getElementById("sign-in-some-id-tenant");
 
       function initApp() {
-        buttonDefault.addEventListener("click", signInWithGoogleDefault);
-        buttonSecond.addEventListener("click", signInWithGoogleSecondTenant);
-        buttonThird.addEventListener("click", signInWithGoogleThirdTenant);
+        buttonDefault.addEventListener("click", signInWithSAMLDefault);
+        buttonSecond.addEventListener("click", signInWithSAMLSecondTenant);
+        buttonThird.addEventListener("click", signInWithSAMLThirdTenant);
 
         auth.onAuthStateChanged(function (user) {
           if (user) {
+            console.log(user)
             // User is signed in.
             var displayName = user.displayName;
             var email = user.email;
@@ -61,22 +62,22 @@
         });
       }
 
-      function signInWithGoogleDefault() {
+      function signInWithSAMLDefault() {
         auth.tenantId = null;
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider);
+        const provider = new SAMLAuthProvider('saml.example-provider');
+        signInWithRedirect(auth, provider);
       }
 
-      function signInWithGoogleSecondTenant() {
-        auth.tenantId = "second-tenant-i8lry";
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider);
+      function signInWithSAMLSecondTenant() {
+        auth.tenantId = "second-tenant";
+        const provider = new SAMLAuthProvider('saml.example-provider');
+        signInWithRedirect(auth, provider);
       }
 
-      function signInWithGoogleThirdTenant() {
-        auth.tenantId = "some-id";
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider);
+      function signInWithSAMLThirdTenant() {
+        auth.tenantId = "third-tenant";
+        const provider = new SAMLAuthProvider('saml.example-provider');
+        signInWithRedirect(auth, provider);
       }
 
       function signtOut() {
@@ -95,7 +96,7 @@
     Try out any of the following in any order:
     <ul>
       <li>
-        Click "Sign in with Google default tenant" button
+        Click "Sign in with SAML default tenant" button
         <ol>
           <li>
             If tenant has accounts, validate if it shows the accounts for that
@@ -119,7 +120,7 @@
       </li>
       <br />
       <li>
-        Click "Sign in with Google second tenant" button
+        Click "Sign in with SAML second tenant" button
         <ol>
           <li>
             If tenant has accounts, validate if it shows the accounts for that
@@ -143,7 +144,7 @@
       </li>
       <br />
       <li>
-        Click "Sign in with Google some-id tenant" button
+        Click "Sign in with SAML some-id tenant" button
         <ol>
           <li>
             If tenant has accounts, validate if it shows the accounts for that
@@ -172,7 +173,7 @@
     <!-- sign in default tenant button -->
     <br />
     <button id="sign-in-default-tenant">
-      Sign in with Google default tenant
+      Sign in with SAML default tenant
     </button>
     <br />
     <br />
@@ -181,7 +182,7 @@
     <!-- sign in second tenant button -->
     <br />
     <button id="sign-in-second-tenant">
-      Sign in with Google second tenant
+      Sign in with SAML second tenant
     </button>
     <br />
     <br />
@@ -190,7 +191,7 @@
     some-id tenant:
     <br />
     <button id="sign-in-some-id-tenant">
-      Sign in with Google some-id tenant
+      Sign in with SAML some-id tenant
     </button>
     <br />
 
